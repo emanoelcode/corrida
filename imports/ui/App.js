@@ -23,12 +23,7 @@ class App extends Component {
         //Find the text field via the react ref
         const text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
 
-        Tasks.insert({
-            text,
-            createdAt: new Date(), // current time
-            owner: Meteor.userId(),
-            username: Meteor.user().username, // username of logged in user
-        });
+        Meteor.call('tasks.insert', text);
 
         // Clear form
         ReactDOM.findDOMNode(this.refs.textInput).value = '';
@@ -89,8 +84,9 @@ class App extends Component {
 }
 
 export default withTracker(() => {
+    Meteor.subscribe('tasks');
     return {
-        tasks: Tasks.find({}).fetch(),
+        tasks: Tasks.find({}, { sort: { createdAt: -1 } }).fetch(),
         incompleteCount: Tasks.find({ checked: {$ne: true } }).count(),
         currentUser: Meteor.user(),
     };
