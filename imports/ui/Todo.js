@@ -4,10 +4,9 @@ import ReactDOM from 'react-dom';
 import { Tasks } from "../api/tasks";
 import Task from './Task';
 import { Meteor } from 'meteor/meteor';
-import AppBar from './AppBar';
 
-//App component represents the whole app
-class App extends Component {
+// Task component represents a single todo item
+class Todo extends Component {
 
     constructor(props) {
         super(props);
@@ -56,40 +55,35 @@ class App extends Component {
 
     render() {
         return (
-            <div className="container">
-                <header>
-                    <AppBar />
+            <div>
+                <h1>Todo List ({this.props.incompleteCount})</h1>
 
-                    <h1>Todo List ({this.props.incompleteCount})</h1>
+                <label className="hide-completed">
+                    <input
+                        type="checkbox"
+                        readOnly
+                        checked={this.state.hideCompleted}
+                        onClick={this.toggleHideCompleted.bind(this)}
+                    />
+                    Hide Completed Tasks
+                </label>
 
-                    <label className="hide-completed">
-                        <input
-                            type="checkbox"
-                            readOnly
-                            checked={this.state.hideCompleted}
-                            onClick={this.toggleHideCompleted.bind(this)}
-                        />
-                        Hide Completed Tasks
-                    </label>
-
-                    {this.props.currentUser &&
-                        <form className="new-task" onSubmit={this.handleSubmit.bind(this)}>
-                            <input
-                                type="text"
-                                ref="textInput"
-                                placeholder="Type to add new tasks"
-                            />
-                        </form>
-                    }
-                </header>
+                {this.props.currentUser &&
+                <form className="new-task" onSubmit={this.handleSubmit.bind(this)}>
+                    <input
+                        type="text"
+                        ref="textInput"
+                        placeholder="Type to add new tasks"
+                    />
+                </form>
+                }
 
                 <ul>
                     {this.renderTasks()}
                 </ul>
             </div>
-        );
-    }
-
+        )
+    };
 }
 
 export default withTracker(() => {
@@ -99,4 +93,4 @@ export default withTracker(() => {
         incompleteCount: Tasks.find({ checked: {$ne: true } }).count(),
         currentUser: Meteor.user(),
     };
-})(App);
+})(Todo);
